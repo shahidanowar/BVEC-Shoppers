@@ -11,25 +11,45 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
+        let subscription = null
+
+        supabase.auth.getSession().then(({ data, error }) => {
+            if (error) {
+                console.error('Session error:', error)
+                setLoading(false)
+                return
+            }
+            const session = data?.session
             setUser(session?.user ?? null)
             if (session?.user) fetchProfile(session.user.id)
             else setLoading(false)
+        }).catch(err => {
+            console.error('Session promise error:', err)
+            setLoading(false)
         })
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(
-            async (_event, session) => {
-                setUser(session?.user ?? null)
-                if (session?.user) {
-                    await fetchProfile(session.user.id)
-                } else {
-                    setProfile(null)
-                    setLoading(false)
+        const setupAuthListener = async () => {
+            const { data } = supabase.auth.onAuthStateChange(
+                async (_event, session) => {
+                    setUser(session?.user ?? null)
+                    if (session?.user) {
+                        await fetchProfile(session.user.id)
+                    } else {
+                        setProfile(null)
+                        setLoading(false)
+                    }
                 }
-            }
-        )
+            )
+            subscription = data.subscription
+        }
 
-        return () => subscription.unsubscribe()
+        setupAuthListener()
+
+        return () => {
+            if (subscription) {
+                subscription.unsubscribe()
+            }
+        }
     }, [])
 
     async function fetchProfile(userId) {
