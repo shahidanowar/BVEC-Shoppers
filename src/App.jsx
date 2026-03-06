@@ -8,6 +8,7 @@ import CreateListing from './pages/CreateListing'
 import ProductDetail from './pages/ProductDetail'
 import MyListings from './pages/MyListings'
 import Profile from './pages/Profile'
+import EditListing from './pages/EditListing'
 
 function App() {
   return (
@@ -38,6 +39,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ProductDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit/:id"
+              element={
+                <ProtectedRoute>
+                  <EditListing />
                 </ProtectedRoute>
               }
             />

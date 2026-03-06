@@ -63,11 +63,17 @@ export default function ProductDetail() {
     }
 
     function openWhatsApp() {
-        const phone = product.profiles?.whatsapp_number?.replace(/[^0-9]/g, '')
+        let phone = product.profiles?.whatsapp_number?.replace(/[^0-9]/g, '')
         if (!phone) {
             alert('Seller has not added their WhatsApp number yet.')
             return
         }
+
+        // Ensure phone starts with 91
+        if (!phone.startsWith('91')) {
+            phone = '91' + phone;
+        }
+
         const message = encodeURIComponent(
             `Hi! I'm interested in "${product.name}" (ID: ${product.id}) listed on BVEC Shoppers. Is it still available?`
         )
@@ -165,13 +171,25 @@ export default function ProductDetail() {
 
                     <div className="product-actions">
                         {isOwner ? (
-                            <button
-                                className="btn btn-danger btn-lg"
-                                onClick={handleDelete}
-                                disabled={deleting}
-                            >
-                                {deleting ? 'Deleting...' : 'Delete Listing'}
-                            </button>
+                            <>
+                                <button
+                                    className="btn btn-secondary btn-lg"
+                                    onClick={() => navigate(`/edit/${product.id}`)}
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                    Edit
+                                </button>
+                                <button
+                                    className="btn btn-danger btn-lg"
+                                    onClick={handleDelete}
+                                    disabled={deleting}
+                                >
+                                    {deleting ? 'Deleting...' : 'Delete'}
+                                </button>
+                            </>
                         ) : (
                             <button className="btn btn-whatsapp btn-lg" onClick={openWhatsApp}>
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
