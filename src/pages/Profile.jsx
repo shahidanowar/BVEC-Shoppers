@@ -76,13 +76,17 @@ export default function Profile() {
                             }}
                             maxLength={10}
                             disabled={!isEditing}
-                            style={!isEditing ? { backgroundColor: 'transparent', cursor: 'default', color: 'var(--text-primary)', fontWeight: '600' } : {}}
+                            style={{
+                                flex: 1,
+                                minWidth: 0,
+                                ...(!isEditing ? { backgroundColor: 'transparent', cursor: 'default', color: 'var(--text-primary)', fontWeight: '600' } : {})
+                            }}
                         />
                         {!isEditing && (
                             <button
                                 type="button"
                                 onClick={(e) => { e.preventDefault(); setIsEditing(true); }}
-                                style={{ background: 'none', color: 'var(--accent)', fontWeight: '600', padding: '0 8px', cursor: 'pointer', border: 'none' }}
+                                style={{ background: 'none', color: 'var(--accent)', fontWeight: '600', padding: '0 8px', cursor: 'pointer', border: 'none', marginRight: '8px' }}
                             >
                                 Edit
                             </button>

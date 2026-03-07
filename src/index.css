@@ -161,8 +161,6 @@ textarea {
   height: var(--navbar-height);
   background: var(--accent);
   /* Flipkart blue navbar */
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--accent-dark);
   z-index: 100;
   color: white;
@@ -248,7 +246,11 @@ textarea {
 }
 
 @media (min-width: 769px) {
-  .nav-link-primary {
+  .mobile-sell-btn {
+    display: none !important;
+  }
+
+  .desktop-sell-btn {
     position: fixed;
     bottom: 32px;
     right: 32px;
@@ -256,18 +258,27 @@ textarea {
     border-radius: 40px;
     background: var(--brand-yellow);
     color: white !important;
-    box-shadow: 0 4px 20px rgba(255, 159, 0, 0.35);
-    z-index: 1000;
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 6px 24px rgba(255, 159, 0, 0.4);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: all var(--transition);
   }
 
-  .nav-link-primary:hover {
+  .desktop-sell-btn:hover {
     background: #f09600;
     transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(255, 159, 0, 0.5);
   }
+}
 
-  .nav-link-primary svg {
-    width: 24px;
-    height: 24px;
+@media (max-width: 768px) {
+  .desktop-sell-btn {
+    display: none !important;
   }
 }
 
@@ -1320,12 +1331,6 @@ select option {
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-
-  /* Remove backdrop-filter because it creates a containing block that traps position: fixed children */
-  .navbar {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
 
   /* Hide the desktop nav links entirely from the top bar */
   .navbar-links {
