@@ -88,6 +88,12 @@ export default function CreateListing() {
             console.error('Error creating listing:', err)
             alert('Failed to create listing. Please try again.')
         } finally {
+            // Clean up local preview object URLs to free device memory
+            images.forEach(img => {
+                if (img && img.previewUrl) {
+                    URL.revokeObjectURL(img.previewUrl)
+                }
+            })
             setLoading(false)
         }
     }
