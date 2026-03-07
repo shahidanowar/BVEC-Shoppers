@@ -1,10 +1,55 @@
 import { useState, useRef } from 'react'
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB absolute max
+const COMPRESS_THRESHOLD = 400 * 1024 // 400KB
 
 export default function ImageUpload({ images, setImages, maxImages = 3 }) {
     const [uploadingIndex, setUploadingIndex] = useState(null)
     const fileInputRef = useRef(null)
     const [activeIndex, setActiveIndex] = useState(null)
+
+    const compressImage = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            reader.readAsDataURL(file)
+            reader.onload = (event) => {
+                const img = new Image()
+                img.src = event.target.result
+                img.onload = () => {
+                    const canvas = document.createElement('canvas')
+                    let { width, height } = img
+                    const maxDim = 1200
+
+                    if (width > height && width > maxDim) {
+                        height = Math.round((height * maxDim) / width)
+                        width = maxDim
+                    } else if (height > width && height > maxDim) {
+                        width = Math.round((width * maxDim) / height)
+                        height = maxDim
+                    }
+
+                    canvas.width = width
+                    canvas.height = height
+                    const ctx = canvas.getContext('2d')
+                    ctx.drawImage(img, 0, 0, width, height)
+
+                    canvas.toBlob((blob) => {
+                        if (!blob) {
+                            resolve(file) // fallback to original
+                            return
+                        }
+                        const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", {
+                            type: 'image/jpeg',
+                            lastModified: Date.now()
+                        })
+                        resolve(compressedFile)
+                    }, 'image/jpeg', 0.7)
+                }
+                img.onerror = () => resolve(file)
+            }
+            reader.onerror = () => resolve(file)
+        })
+    }
 
     const handleFiles = async (file) => {
         if (!file) return
@@ -13,38 +58,32 @@ export default function ImageUpload({ images, setImages, maxImages = 3 }) {
             alert('Please select an image file.')
             return
         }
-        if (file.size > 5 * 1024 * 1024) {
-            alert('Image must be under 5MB')
+        if (file.size > MAX_FILE_SIZE) {
+            alert('Image must be under 5MB before compression.')
             return
         }
 
         setUploadingIndex(activeIndex)
 
         try {
-            const ext = file.name.split('.').pop()
-            const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${ext}`
-            const filePath = `listings/${fileName}`
+            let finalFile = file;
+            // Compress if over 400KB
+            if (file.size > COMPRESS_THRESHOLD) {
+                finalFile = await compressImage(file)
+            }
 
-            const { error: uploadError } = await supabase.storage
-                .from('product-images')
-                .upload(filePath, file)
-
-            if (uploadError) throw uploadError
-
-            const { data: { publicUrl } } = supabase.storage
-                .from('product-images')
-                .getPublicUrl(filePath)
+            const previewUrl = URL.createObjectURL(finalFile)
 
             const newImages = [...images]
-            while (newImages.length < maxImages) newImages.push('') // Ensure array size
+            while (newImages.length < maxImages) newImages.push(null)
 
-            newImages[activeIndex] = publicUrl
+            newImages[activeIndex] = { file: finalFile, previewUrl }
 
-            // Clean up any empty strings before passing to parent
-            setImages(newImages.filter(url => url !== ''))
+            // Clean up any nulls before passing to parent
+            setImages(newImages.filter(item => item !== null))
         } catch (err) {
-            console.error('Error uploading:', err)
-            alert('Failed to upload image.')
+            console.error('Error processing image:', err)
+            alert('Failed to process image.')
         } finally {
             setUploadingIndex(null)
             setActiveIndex(null)
@@ -54,6 +93,13 @@ export default function ImageUpload({ images, setImages, maxImages = 3 }) {
 
     const removeImage = (indexToRemove) => {
         const newImages = [...images]
+
+        // Revoke the object URL to avoid memory leaks
+        const img = newImages[indexToRemove]
+        if (img && img.previewUrl) {
+            URL.revokeObjectURL(img.previewUrl)
+        }
+
         newImages.splice(indexToRemove, 1)
         setImages(newImages)
     }
@@ -63,7 +109,7 @@ export default function ImageUpload({ images, setImages, maxImages = 3 }) {
         fileInputRef.current?.click()
     }
 
-    // Helper to get image at index safely
+    // Helper to get image preview url at index safely
     const getImageUrl = (index) => images[index]?.previewUrl || null
 
     return (
