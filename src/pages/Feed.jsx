@@ -4,8 +4,8 @@ import ProductCard from '../components/ProductCard'
 
 const CATEGORIES = ['All', 'Books', 'Electronics', 'Clothing', 'Furniture', 'Stationery', 'Sports', 'Other']
 const SORT_OPTIONS = [
-    { value: 'newest', label: 'Newest First' },
-    { value: 'oldest', label: 'Oldest First' },
+    { value: 'newest', label: 'Sort' },
+    { value: 'oldest', label: 'Oldest' },
     { value: 'price_low', label: 'Price: Low → High' },
     { value: 'price_high', label: 'Price: High → Low' },
 ]
