@@ -1222,6 +1222,12 @@ select option {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
 
+  /* Remove backdrop-filter because it creates a containing block that traps position: fixed children */
+  .navbar {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
   /* Hide the desktop nav links entirely from the top bar */
   .navbar-links {
     position: fixed;
