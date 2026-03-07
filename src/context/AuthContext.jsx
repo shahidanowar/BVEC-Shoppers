@@ -7,24 +7,6 @@ export const useAuth = () => useContext(AuthContext)
 
 const AUTH_SESSION_TIMEOUT_MS = 8000
 
-function withTimeout(promise, timeoutMs, label) {
-    return new Promise((resolve, reject) => {
-        const timer = setTimeout(() => {
-            reject(new Error(`${label} timed out after ${timeoutMs}ms`))
-        }, timeoutMs)
-
-        promise
-            .then((value) => {
-                clearTimeout(timer)
-                resolve(value)
-            })
-            .catch((err) => {
-                clearTimeout(timer)
-                reject(err)
-            })
-    })
-}
-
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null)
     const [profile, setProfile] = useState(null)
@@ -37,13 +19,20 @@ export function AuthProvider({ children }) {
         let subscription = null
 
         const initSession = async () => {
-            try {
-                const { data, error } = await withTimeout(
-                    supabase.auth.getSession(),
-                    AUTH_SESSION_TIMEOUT_MS,
-                    'Auth session lookup'
-                )
+            let timeoutId = null
+            let didTimeout = false
 
+            timeoutId = setTimeout(() => {
+                didTimeout = true
+                if (!mountedRef.current) return
+                console.warn('Auth session lookup is slow; continuing without blocking UI.')
+                setLoading(false)
+            }, AUTH_SESSION_TIMEOUT_MS)
+
+            try {
+                const { data, error } = await supabase.auth.getSession()
+
+                if (timeoutId) clearTimeout(timeoutId)
                 if (!mountedRef.current) return
 
                 if (error) {
@@ -60,6 +49,10 @@ export function AuthProvider({ children }) {
                     setProfile(null)
                 }
             } catch (err) {
+                if (timeoutId) clearTimeout(timeoutId)
+                if (didTimeout) {
+                    return
+                }
                 console.error('Session error:', err)
                 if (!mountedRef.current) return
                 setUser(null)
