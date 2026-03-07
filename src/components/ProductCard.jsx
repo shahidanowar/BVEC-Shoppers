@@ -34,9 +34,6 @@ export default function ProductCard({ product }) {
                         <span>No Image</span>
                     </div>
                 )}
-                {product.category && (
-                    <span className="product-card-badge">{product.category}</span>
-                )}
             </div>
             <div className="product-card-body">
                 <h3 className="product-card-title">{product.name}</h3>
