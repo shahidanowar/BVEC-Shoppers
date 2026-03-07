@@ -30,7 +30,11 @@ export function AuthProvider({ children }) {
             }, AUTH_SESSION_TIMEOUT_MS)
 
             try {
+                console.log('[Auth] Attempting getSession...')
+                console.time('Session fetch')
                 const { data, error } = await supabase.auth.getSession()
+                console.timeEnd('Session fetch')
+                console.log('[Auth] getSession finished', { data, error })
 
                 if (timeoutId) clearTimeout(timeoutId)
                 if (!mountedRef.current) return
