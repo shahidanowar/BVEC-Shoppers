@@ -13,6 +13,7 @@ export default function EditListing() {
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
     const [images, setImages] = useState([])
+    const [originalImages, setOriginalImages] = useState([])
     const [form, setForm] = useState({
         name: '',
         price: '',
@@ -45,7 +46,16 @@ export default function EditListing() {
                 description: data.description || '',
                 category: data.category || '',
             })
-            setImages(data.images || [])
+
+            // Format existing images for ImageUpload component
+            const existingImages = data.images || []
+            setOriginalImages(existingImages)
+
+            const formattedImages = existingImages.map(url => ({
+                file: null, // No local file for existing images
+                previewUrl: url
+            }))
+            setImages(formattedImages)
         } catch (err) {
             console.error('Error fetching product:', err)
             navigate('/')
@@ -68,6 +78,52 @@ export default function EditListing() {
 
         setSaving(true)
         try {
+            // 1. Process images
+            const finalUrls = []
+
+            for (const img of images) {
+                if (!img) continue
+
+                if (img.file) {
+                    // This is a new image, upload it
+                    const ext = img.file.name.split('.').pop()
+                    const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${ext}`
+                    const filePath = `listings/${fileName}`
+
+                    const { error: uploadError } = await supabase.storage
+                        .from('product-images')
+                        .upload(filePath, img.file)
+
+                    if (uploadError) throw new Error('Failed to upload new image.')
+
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('product-images')
+                        .getPublicUrl(filePath)
+
+                    finalUrls.push(publicUrl)
+                } else if (img.previewUrl) {
+                    // This is an existing image we are keeping
+                    finalUrls.push(img.previewUrl)
+                }
+            }
+
+            // 2. Cleanup replaced/deleted old images from storage
+            const pathsToRemove = originalImages
+                .filter(url => !finalUrls.includes(url))
+                .map(url => {
+                    const parts = url.split('product-images/')
+                    return parts.length > 1 ? parts[1] : null
+                })
+                .filter(Boolean)
+
+            if (pathsToRemove.length > 0) {
+                const { error: storageError } = await supabase.storage
+                    .from('product-images')
+                    .remove(pathsToRemove)
+                if (storageError) console.error('Error removing old images:', storageError)
+            }
+
+            // 3. Update database
             const { error } = await supabase
                 .from('products')
                 .update({
@@ -75,7 +131,7 @@ export default function EditListing() {
                     price: parseFloat(form.price),
                     description: form.description.trim(),
                     category: form.category,
-                    images: images,
+                    images: finalUrls,
                 })
                 .eq('id', id)
 
@@ -85,6 +141,12 @@ export default function EditListing() {
             console.error('Error updating listing:', err)
             alert('Failed to update listing. Please try again.')
         } finally {
+            // Memory cleanup for local previews
+            images.forEach(img => {
+                if (img && img.file && img.previewUrl) {
+                    URL.revokeObjectURL(img.previewUrl)
+                }
+            })
             setSaving(false)
         }
     }
