@@ -1325,7 +1325,28 @@ select option {
 
 @media (max-width: 480px) {
   .product-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .product-card-body {
+    padding: 10px;
+  }
+
+  .product-card-title {
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+  }
+
+  .product-card-price {
+    font-size: 1.05rem;
+  }
+
+  .chip-category {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    top: 8px;
+    left: 8px;
   }
 
   .image-previews {
