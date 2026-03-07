@@ -1404,6 +1404,7 @@ select option {
 @media (max-width: 480px) {
   .search-bar {
     height: 56px;
+    flex: 3;
   }
 
   .search-btn {
@@ -1421,7 +1422,9 @@ select option {
 
   .sort-select {
     height: 56px;
-    padding: 0 28px 0 12px;
+    padding: 0 24px 0 10px;
+    flex: 1;
+    min-width: 0;
   }
 
   .search-bar input {
