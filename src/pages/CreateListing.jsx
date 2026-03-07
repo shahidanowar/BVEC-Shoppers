@@ -36,7 +36,32 @@ export default function CreateListing() {
 
         setLoading(true)
         try {
-            // Generate a 4-digit random alphanumeric ID
+            // 1. Upload images first
+            const uploadedUrls = []
+            for (const img of images) {
+                if (!img || !img.file) continue
+
+                const ext = img.file.name.split('.').pop()
+                const fileName = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${ext}`
+                const filePath = `listings/${fileName}`
+
+                const { error: uploadError } = await supabase.storage
+                    .from('product-images')
+                    .upload(filePath, img.file)
+
+                if (uploadError) {
+                    console.error('Image upload error:', uploadError)
+                    throw new Error('Failed to upload one or more images.')
+                }
+
+                const { data: { publicUrl } } = supabase.storage
+                    .from('product-images')
+                    .getPublicUrl(filePath)
+
+                uploadedUrls.push(publicUrl)
+            }
+
+            // 2. Generate a 4-digit random alphanumeric ID
             const generateShortId = () => {
                 const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                 let id = ''
@@ -46,6 +71,7 @@ export default function CreateListing() {
                 return id
             }
 
+            // 3. Save to database
             const { error } = await supabase.from('products').insert({
                 id: generateShortId(),
                 user_id: user.id,
@@ -53,7 +79,7 @@ export default function CreateListing() {
                 price: parseFloat(form.price),
                 description: form.description.trim(),
                 category: form.category,
-                images: images,
+                images: uploadedUrls,
             })
 
             if (error) throw error

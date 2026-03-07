@@ -51,6 +51,20 @@ export default function ProductDetail() {
         if (!confirm('Are you sure you want to delete this listing?')) return
         setDeleting(true)
         try {
+            if (product.images && product.images.length > 0) {
+                const pathsToRemove = product.images.map(url => {
+                    const parts = url.split('product-images/')
+                    return parts.length > 1 ? parts[1] : null
+                }).filter(Boolean)
+
+                if (pathsToRemove.length > 0) {
+                    const { error: storageError } = await supabase.storage
+                        .from('product-images')
+                        .remove(pathsToRemove)
+                    if (storageError) console.error('Error removing images:', storageError)
+                }
+            }
+
             const { error } = await supabase.from('products').delete().eq('id', id)
             if (error) throw error
             navigate('/')

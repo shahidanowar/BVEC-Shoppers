@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { supabase } from '../lib/supabase'
+
 
 export default function ImageUpload({ images, setImages, maxImages = 3 }) {
     const [uploadingIndex, setUploadingIndex] = useState(null)
@@ -64,7 +64,7 @@ export default function ImageUpload({ images, setImages, maxImages = 3 }) {
     }
 
     // Helper to get image at index safely
-    const getImageUrl = (index) => images[index] || null
+    const getImageUrl = (index) => images[index]?.previewUrl || null
 
     return (
         <div className="image-upload-boxes">
