@@ -23,6 +23,7 @@ export default function EditListing() {
 
     useEffect(() => {
         fetchProduct()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id])
 
     async function fetchProduct() {

@@ -3,10 +3,12 @@ import { supabase } from '../lib/supabase'
 
 const AuthContext = createContext({})
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext)
 
 const AUTH_SESSION_TIMEOUT_MS = 8000
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null)
     const [profile, setProfile] = useState(null)
@@ -30,11 +32,7 @@ export function AuthProvider({ children }) {
             }, AUTH_SESSION_TIMEOUT_MS)
 
             try {
-                console.log('[Auth] Attempting getSession...')
-                console.time('Session fetch')
                 const { data, error } = await supabase.auth.getSession()
-                console.timeEnd('Session fetch')
-                console.log('[Auth] getSession finished', { data, error })
 
                 if (timeoutId) clearTimeout(timeoutId)
                 if (!mountedRef.current) return

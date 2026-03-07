@@ -20,6 +20,7 @@ export default function Feed() {
 
     useEffect(() => {
         fetchProducts()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [category, sort])
 
     async function fetchProducts() {

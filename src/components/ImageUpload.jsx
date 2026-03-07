@@ -9,7 +9,7 @@ export default function ImageUpload({ images, setImages, maxImages = 3 }) {
     const [activeIndex, setActiveIndex] = useState(null)
 
     const compressImage = (file) => {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             const reader = new FileReader()
             reader.readAsDataURL(file)
             reader.onload = (event) => {
