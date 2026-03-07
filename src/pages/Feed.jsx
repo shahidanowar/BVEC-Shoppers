@@ -14,6 +14,7 @@ export default function Feed() {
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState('')
+    const [searchInput, setSearchInput] = useState('')
     const [category, setCategory] = useState('All')
     const [sort, setSort] = useState('newest')
 
@@ -62,25 +63,30 @@ export default function Feed() {
         p.description?.toLowerCase().includes(search.toLowerCase())
     )
 
+    const handleSearch = (e) => {
+        e.preventDefault()
+        setSearch(searchInput)
+    }
+
     return (
         <div className="feed-page">
 
-            <div className="feed-controls">
-                <div className="search-bar">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </svg>
-                    <input
-                        type="text"
-                        placeholder="Search products..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
-                    {search && (
-                        <button className="search-clear" onClick={() => setSearch('')}>×</button>
-                    )}
-                </div>
+            <form className="search-bar" onSubmit={handleSearch}>
+                <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                />
+                {searchInput && (
+                    <button type="button" className="search-clear" onClick={() => { setSearchInput(''); setSearch('') }}>×</button>
+                )}
+                <button type="submit" className="search-btn">
+                    Search
+                </button>
+            </form>
 
+            <div className="filters-scroll-row">
                 <select
                     className="sort-select"
                     value={sort}
@@ -90,18 +96,18 @@ export default function Feed() {
                         <option key={opt.value} value={opt.value}>{opt.label}</option>
                     ))}
                 </select>
-            </div>
 
-            <div className="category-chips">
-                {CATEGORIES.map((cat) => (
-                    <button
-                        key={cat}
-                        className={`chip ${category === cat ? 'chip-active' : ''}`}
-                        onClick={() => setCategory(cat)}
-                    >
-                        {cat}
-                    </button>
-                ))}
+                <div className="category-chips">
+                    {CATEGORIES.map((cat) => (
+                        <button
+                            key={cat}
+                            className={`chip ${category === cat ? 'chip-active' : ''}`}
+                            onClick={() => setCategory(cat)}
+                        >
+                            {cat}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {loading ? (

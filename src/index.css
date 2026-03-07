@@ -210,6 +210,12 @@ textarea {
   gap: 4px;
 }
 
+.nav-icon {
+  width: 18px;
+  height: 18px;
+  transition: all var(--transition);
+}
+
 .nav-link {
   display: flex;
   align-items: center;
@@ -479,23 +485,32 @@ textarea {
 }
 
 .feed-controls {
-  display: flex;
-  gap: 16px;
   margin-bottom: 24px;
 }
 
 .search-bar {
-  flex: 1;
   display: flex;
   align-items: center;
-  gap: 12px;
   background: white;
-  padding: 12px 20px;
-  border-radius: var(--radius-full);
+  padding: 4px 4px 4px 16px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-light);
   box-shadow: var(--shadow-sm);
   transition: all var(--transition);
-  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.search-btn {
+  background: var(--brand-yellow);
+  color: white;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+}
+
+.search-btn:hover {
+  background: #f09600;
 }
 
 .search-bar:focus-within {
@@ -529,21 +544,34 @@ textarea {
   color: var(--text-primary);
 }
 
+.filters-scroll-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.filters-scroll-row::-webkit-scrollbar {
+  display: none;
+}
+
 .sort-select {
-  height: 48px;
-  padding: 0 20px;
+  height: 40px;
+  padding: 0 16px;
   background: white;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-full);
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
-  min-width: 170px;
   appearance: auto;
   box-shadow: var(--shadow-sm);
   outline: none;
   transition: all var(--transition);
+  flex-shrink: 0;
 }
 
 .sort-select:focus {
@@ -558,13 +586,15 @@ textarea {
 
 .category-chips {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 32px;
+  gap: 8px;
+  flex-wrap: nowrap;
 }
 
 .chip {
-  padding: 8px 18px;
+  padding: 0 16px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
   border-radius: var(--radius-full);
   background: white;
   border: 1px solid var(--border-light);
@@ -574,12 +604,13 @@ textarea {
   cursor: pointer;
   transition: all var(--transition);
   box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .chip:hover {
   background: var(--bg-primary);
   color: var(--text-primary);
-  transform: translateY(-1px);
 }
 
 .chip-active {
@@ -1263,6 +1294,11 @@ select option {
     position: relative;
     flex: 1;
     align-items: center;
+  }
+
+  .nav-icon {
+    width: 24px;
+    height: 24px;
   }
 
   .nav-link:hover {

@@ -6,9 +6,13 @@ export default function Profile() {
     const [whatsapp, setWhatsapp] = useState(profile?.whatsapp_number || '')
     const [saving, setSaving] = useState(false)
     const [saved, setSaved] = useState(false)
+    const [isEditing, setIsEditing] = useState(!profile?.whatsapp_number)
 
     useEffect(() => {
         setWhatsapp(profile?.whatsapp_number || '')
+        if (profile?.whatsapp_number) {
+            setIsEditing(false)
+        }
     }, [profile?.whatsapp_number])
 
     const handleSave = async (e) => {
@@ -24,6 +28,7 @@ export default function Profile() {
         try {
             await updateProfile({ whatsapp_number: whatsapp.trim() })
             setSaved(true)
+            setIsEditing(false)
             setTimeout(() => setSaved(false), 3000)
         } catch (err) {
             console.error('Error updating profile:', err)
@@ -70,25 +75,42 @@ export default function Profile() {
                                 setWhatsapp(val ? `91${val}` : '');
                             }}
                             maxLength={10}
+                            disabled={!isEditing}
+                            style={!isEditing ? { backgroundColor: 'transparent', cursor: 'default', color: 'var(--text-primary)', fontWeight: '600' } : {}}
                         />
+                        {!isEditing && (
+                            <button
+                                type="button"
+                                onClick={(e) => { e.preventDefault(); setIsEditing(true); }}
+                                style={{ background: 'none', color: 'var(--accent)', fontWeight: '600', padding: '0 8px', cursor: 'pointer', border: 'none' }}
+                            >
+                                Edit
+                            </button>
+                        )}
                     </div>
                     <p className="form-help">
                         This number will be shared with buyers who want to contact you about your listings.
                     </p>
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-lg" disabled={saving}>
-                    {saving ? (
-                        <>
-                            <div className="spinner small"></div>
-                            Saving...
-                        </>
-                    ) : saved ? (
-                        <>✓ Saved!</>
-                    ) : (
-                        'Save Profile'
-                    )}
-                </button>
+                {isEditing && (
+                    <button type="submit" className="btn btn-primary btn-lg" disabled={saving}>
+                        {saving ? (
+                            <>
+                                <div className="spinner small"></div>
+                                Saving...
+                            </>
+                        ) : saved ? (
+                            <>✓ Saved!</>
+                        ) : (
+                            'Save Profile'
+                        )}
+                    </button>
+                )}
+
+                {saved && !isEditing && (
+                    <p style={{ color: 'var(--success)', fontWeight: '600', textAlign: 'center' }}>✓ Profile Saved Successfully!</p>
+                )}
             </form>
         </div>
     )
