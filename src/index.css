@@ -489,28 +489,46 @@ textarea {
 }
 
 .search-bar {
-  display: flex;
-  align-items: center;
-  background: white;
-  padding: 4px 4px 4px 16px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-sm);
-  transition: all var(--transition);
+  position: relative;
+  height: 60px;
+  width: 100%;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
   margin-bottom: 16px;
+  border: 1px solid var(--border-light);
 }
 
 .search-btn {
-  background: var(--brand-yellow);
-  color: white;
-  font-weight: 600;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  border: none;
   padding: 10px 24px;
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
+  background-color: var(--brand-yellow);
+  cursor: pointer;
   transition: all var(--transition);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-btn-icon {
+  display: none;
 }
 
 .search-btn:hover {
   background: #f09600;
+}
+
+.search-btn:active {
+  transform: translateY(-50%) scale(0.98);
 }
 
 .search-bar:focus-within {
@@ -519,11 +537,16 @@ textarea {
 }
 
 .search-bar input {
-  flex: 1;
-  background: none;
+  height: 100%;
+  width: 100%;
+  outline: none;
+  font-size: 16px;
+  font-weight: 400;
   border: none;
+  padding: 0 115px 0 20px;
+  background-color: transparent;
   color: var(--text-primary);
-  font-size: 0.9rem;
+  border-radius: 8px;
 }
 
 .search-bar input::placeholder {
@@ -531,13 +554,18 @@ textarea {
 }
 
 .search-clear {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 110px;
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   padding: 0 4px;
   cursor: pointer;
   transition: color var(--transition);
+  z-index: 10;
 }
 
 .search-clear:hover {
@@ -1370,6 +1398,32 @@ select option {
 }
 
 @media (max-width: 480px) {
+  .search-bar {
+    height: 56px;
+  }
+
+  .search-btn {
+    right: 8px;
+    padding: 10px;
+  }
+
+  .search-btn-text {
+    display: none;
+  }
+
+  .search-btn-icon {
+    display: block;
+  }
+
+  .search-bar input {
+    padding: 0 95px 0 16px;
+    font-size: 15px;
+  }
+
+  .search-clear {
+    right: 90px;
+  }
+
   .product-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
