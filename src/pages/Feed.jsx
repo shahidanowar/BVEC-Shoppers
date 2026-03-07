@@ -71,25 +71,25 @@ export default function Feed() {
     return (
         <div className="feed-page">
 
-            <form className="search-bar" onSubmit={handleSearch}>
-                <input
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                />
-                {searchInput && (
-                    <button type="button" className="search-clear" onClick={() => { setSearchInput(''); setSearch('') }}>×</button>
-                )}
-                <button type="submit" className="search-btn">
-                    <svg className="search-btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-                    </svg>
-                    <span className="search-btn-text">Search</span>
-                </button>
-            </form>
+            <div className="feed-controls">
+                <form className="search-bar" onSubmit={handleSearch}>
+                    <input
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                    />
+                    {searchInput && (
+                        <button type="button" className="search-clear" onClick={() => { setSearchInput(''); setSearch('') }}>×</button>
+                    )}
+                    <button type="submit" className="search-btn">
+                        <svg className="search-btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                        </svg>
+                        <span className="search-btn-text">Search</span>
+                    </button>
+                </form>
 
-            <div className="filters-scroll-row">
                 <select
                     className="sort-select"
                     value={sort}
@@ -99,6 +99,9 @@ export default function Feed() {
                         <option key={opt.value} value={opt.value}>{opt.label}</option>
                     ))}
                 </select>
+            </div>
+
+            <div className="filters-scroll-row">
 
                 <div className="category-chips">
                     {CATEGORIES.map((cat) => (
