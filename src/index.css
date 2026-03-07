@@ -480,21 +480,21 @@ textarea {
 
 .feed-controls {
   display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .search-bar {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 16px;
-  height: 44px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  transition: border-color var(--transition);
+  gap: 12px;
+  background: white;
+  padding: 12px 20px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
   color: var(--text-secondary);
 }
 
@@ -530,17 +530,25 @@ textarea {
 }
 
 .sort-select {
-  height: 44px;
-  padding: 0 14px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  height: 48px;
+  padding: 0 20px;
+  background: white;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
   color: var(--text-primary);
-  font-size: 0.88rem;
+  font-size: 0.9rem;
+  font-weight: 500;
   cursor: pointer;
   min-width: 170px;
   appearance: auto;
   box-shadow: var(--shadow-sm);
+  outline: none;
+  transition: all var(--transition);
+}
+
+.sort-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(40, 116, 240, 0.1);
 }
 
 .sort-select option {
@@ -550,18 +558,18 @@ textarea {
 
 .category-chips {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 .chip {
-  padding: 7px 16px;
+  padding: 8px 18px;
   border-radius: var(--radius-full);
   background: white;
   border: 1px solid var(--border-light);
   color: var(--text-secondary);
-  font-size: 0.84rem;
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
   transition: all var(--transition);
@@ -569,15 +577,17 @@ textarea {
 }
 
 .chip:hover {
-  background: #f9f9f9;
+  background: var(--bg-primary);
   color: var(--text-primary);
+  transform: translateY(-1px);
 }
 
 .chip-active {
   background: var(--accent);
   color: white;
-  border-color: transparent;
-  box-shadow: 0 2px 8px rgba(40, 116, 240, 0.3);
+  border-color: var(--accent);
+  box-shadow: 0 4px 12px rgba(40, 116, 240, 0.25);
+  font-weight: 600;
 }
 
 .feed-loading {

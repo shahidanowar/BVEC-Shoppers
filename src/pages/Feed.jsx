@@ -64,10 +64,6 @@ export default function Feed() {
 
     return (
         <div className="feed-page">
-            <div className="feed-header">
-                <h1>Marketplace</h1>
-                <p>Discover items from your college community</p>
-            </div>
 
             <div className="feed-controls">
                 <div className="search-bar">
