@@ -36,7 +36,18 @@ export default function CreateListing() {
 
         setLoading(true)
         try {
+            // Generate a 4-digit random alphanumeric ID
+            const generateShortId = () => {
+                const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                let id = ''
+                for (let i = 0; i < 4; i++) {
+                    id += chars.charAt(Math.floor(Math.random() * chars.length))
+                }
+                return id
+            }
+
             const { error } = await supabase.from('products').insert({
+                id: generateShortId(),
                 user_id: user.id,
                 name: form.name.trim(),
                 price: parseFloat(form.price),

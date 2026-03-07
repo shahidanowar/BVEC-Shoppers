@@ -26,7 +26,7 @@ create policy "Users insert own profile" on profiles
 
 -- 2. Products table
 create table if not exists products (
-  id uuid default gen_random_uuid() primary key,
+  id text primary key,
   user_id uuid references profiles(id) on delete cascade not null,
   name text not null,
   description text,
