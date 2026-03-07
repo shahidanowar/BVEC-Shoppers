@@ -1,5 +1,5 @@
 import { useAuth } from '../context/AuthContext'
-import { Navigate } from 'react-router-dom'
+import { Navigate, Link } from 'react-router-dom'
 
 export default function Login() {
     const { user, loading, signInWithGoogle } = useAuth()
@@ -62,6 +62,10 @@ export default function Login() {
 
                 <p className="login-footer">
                     Sign in with your college Google account to get started
+                    <br />
+                    <Link to="/privacy" style={{ color: 'var(--accent)', textDecoration: 'underline', marginTop: '10px', display: 'inline-block' }}>
+                        Privacy Policy
+                    </Link>
                 </p>
             </div>
         </div>
