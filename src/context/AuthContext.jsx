@@ -67,14 +67,14 @@ export function AuthProvider({ children }) {
 
         initSession()
 
-        const setupAuthListener = async () => {
+        const setupAuthListener = () => {
             const { data } = supabase.auth.onAuthStateChange(
-                async (_event, session) => {
+                (_event, session) => {
                     if (!mountedRef.current) return
                     setUser(session?.user ?? null)
                     setLoading(false)
                     if (session?.user) {
-                        await fetchProfile(session.user.id)
+                        fetchProfile(session.user.id)
                     } else {
                         setProfile(null)
                     }
