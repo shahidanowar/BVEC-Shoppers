@@ -695,6 +695,7 @@ textarea {
   margin-bottom: 6px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -1220,12 +1221,62 @@ select option {
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .navbar-links span {
-    display: none;
+
+  /* Hide the desktop nav links entirely from the top bar */
+  .navbar-links {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+    padding-bottom: env(safe-area-inset-bottom, 8px);
+    z-index: 1000;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+    border-radius: 20px 20px 0 0;
   }
 
   .nav-link {
-    padding: 8px 10px;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 16px;
+    color: var(--text-secondary);
+  }
+
+  .nav-link:hover {
+    background: transparent;
+    color: var(--accent);
+  }
+
+  .nav-link span {
+    display: block !important;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  .nav-link-primary {
+    background: transparent;
+    color: var(--text-secondary) !important;
+    box-shadow: none;
+    transform: translateY(-20px);
+  }
+
+  .nav-link-primary svg {
+    background: var(--brand-yellow);
+    color: white;
+    width: 52px;
+    height: 52px;
+    padding: 14px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(255, 159, 0, 0.4);
+    margin-bottom: 2px;
+  }
+
+  .main-content {
+    padding-bottom: 80px;
   }
 
   .product-detail-layout {
