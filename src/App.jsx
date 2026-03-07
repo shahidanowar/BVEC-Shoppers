@@ -9,6 +9,7 @@ import ProductDetail from './pages/ProductDetail'
 import MyListings from './pages/MyListings'
 import Profile from './pages/Profile'
 import EditListing from './pages/EditListing'
+import PrivacyPolicy from './pages/PrivacyPolicy'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <main className="main-content">
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route
               path="/"
               element={
