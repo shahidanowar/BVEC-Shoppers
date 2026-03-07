@@ -1,42 +1,85 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
 const AuthContext = createContext({})
 
 export const useAuth = () => useContext(AuthContext)
 
+const AUTH_SESSION_TIMEOUT_MS = 8000
+
+function withTimeout(promise, timeoutMs, label) {
+    return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => {
+            reject(new Error(`${label} timed out after ${timeoutMs}ms`))
+        }, timeoutMs)
+
+        promise
+            .then((value) => {
+                clearTimeout(timer)
+                resolve(value)
+            })
+            .catch((err) => {
+                clearTimeout(timer)
+                reject(err)
+            })
+    })
+}
+
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null)
     const [profile, setProfile] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [profileLoading, setProfileLoading] = useState(false)
+    const mountedRef = useRef(false)
 
     useEffect(() => {
+        mountedRef.current = true
         let subscription = null
 
-        supabase.auth.getSession().then(({ data, error }) => {
-            if (error) {
-                console.error('Session error:', error)
+        const initSession = async () => {
+            try {
+                const { data, error } = await withTimeout(
+                    supabase.auth.getSession(),
+                    AUTH_SESSION_TIMEOUT_MS,
+                    'Auth session lookup'
+                )
+
+                if (!mountedRef.current) return
+
+                if (error) {
+                    throw error
+                }
+
+                const session = data?.session
+                setUser(session?.user ?? null)
                 setLoading(false)
-                return
+
+                if (session?.user) {
+                    fetchProfile(session.user.id)
+                } else {
+                    setProfile(null)
+                }
+            } catch (err) {
+                console.error('Session error:', err)
+                if (!mountedRef.current) return
+                setUser(null)
+                setProfile(null)
+                setLoading(false)
             }
-            const session = data?.session
-            setUser(session?.user ?? null)
-            if (session?.user) fetchProfile(session.user.id)
-            else setLoading(false)
-        }).catch(err => {
-            console.error('Session promise error:', err)
-            setLoading(false)
-        })
+        }
+
+        initSession()
 
         const setupAuthListener = async () => {
             const { data } = supabase.auth.onAuthStateChange(
                 async (_event, session) => {
+                    if (!mountedRef.current) return
                     setUser(session?.user ?? null)
+                    setLoading(false)
                     if (session?.user) {
                         await fetchProfile(session.user.id)
                     } else {
                         setProfile(null)
-                        setLoading(false)
                     }
                 }
             )
@@ -46,6 +89,7 @@ export function AuthProvider({ children }) {
         setupAuthListener()
 
         return () => {
+            mountedRef.current = false
             if (subscription) {
                 subscription.unsubscribe()
             }
@@ -53,6 +97,8 @@ export function AuthProvider({ children }) {
     }, [])
 
     async function fetchProfile(userId) {
+        if (!userId) return
+        setProfileLoading(true)
         try {
             const { data, error } = await supabase
                 .from('profiles')
@@ -62,9 +108,10 @@ export function AuthProvider({ children }) {
 
             if (error && error.code === 'PGRST116') {
                 // Profile doesn't exist yet, create it
-                const { data: userData } = await supabase.auth.getUser()
+                const { data: userData, error: userError } = await supabase.auth.getUser()
+                if (userError) throw userError
                 const meta = userData?.user?.user_metadata
-                const { data: newProfile } = await supabase
+                const { data: newProfile, error: insertError } = await supabase
                     .from('profiles')
                     .insert({
                         id: userId,
@@ -73,14 +120,18 @@ export function AuthProvider({ children }) {
                     })
                     .select()
                     .single()
-                setProfile(newProfile)
-            } else {
+                if (insertError) throw insertError
+                if (mountedRef.current) setProfile(newProfile)
+            } else if (error) {
+                throw error
+            } else if (mountedRef.current) {
                 setProfile(data)
             }
         } catch (err) {
             console.error('Error fetching profile:', err)
+            if (mountedRef.current) setProfile(null)
         } finally {
-            setLoading(false)
+            if (mountedRef.current) setProfileLoading(false)
         }
     }
 
@@ -115,6 +166,7 @@ export function AuthProvider({ children }) {
         user,
         profile,
         loading,
+        profileLoading,
         signInWithGoogle,
         signOut,
         updateProfile,

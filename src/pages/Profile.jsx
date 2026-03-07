@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 
 export default function Profile() {
@@ -6,6 +6,10 @@ export default function Profile() {
     const [whatsapp, setWhatsapp] = useState(profile?.whatsapp_number || '')
     const [saving, setSaving] = useState(false)
     const [saved, setSaved] = useState(false)
+
+    useEffect(() => {
+        setWhatsapp(profile?.whatsapp_number || '')
+    }, [profile?.whatsapp_number])
 
     const handleSave = async (e) => {
         e.preventDefault()
